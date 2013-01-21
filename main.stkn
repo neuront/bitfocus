@@ -1,0 +1,89 @@
+TICK: 20
+
+canvas: document.getElementById('canvas')
+display: document.getElementById('display')
+
+func bodyW()
+    return document.body.clientWidth
+
+func fromRGB(r, g, b)
+    func hex2(x)
+        s: Math.floor(x).toString(16)
+        if s.length = 1
+            return '0' + s
+        return s
+    return {
+        str: ():
+            return '#' + hex2(r) + hex2(g) + hex2(b)
+          ,
+        adjust: (ratio):
+            return fromRGB(r * ratio, g * ratio, b * ratio)
+          ,
+    }
+
+func horiLaser(y, h, color, z, cb)
+    func extend(node, width, cb)
+        STEP: 20
+        if bodyW() <= width
+            node.style.width: bodyW() + 'px'
+            return cb()
+        node.style.width: width + 'px'
+        setTimeout(%, TICK)
+        extend(node, width + 60, cb)
+
+    func fade(node, opacity, cb)
+        RATE: 0.15
+        if opacity <= 0
+            node.style.opacity: 0
+            return cb()
+        node.style.opacity: opacity
+        setTimeout(%, TICK)
+        fade(node, opacity - RATE, cb)
+
+    parent: document.createElement('div')
+    jQuery(parent).toggleClass('parent')
+    div: document.createElement('div')
+    div.style.height: h + 'px'
+    div.style.backgroundColor: color.str()
+    div.style.position: 'relative'
+    div.style.top: y + 'px'
+    div.style.zIndex: z
+    canvas.appendChild(parent)
+    parent.appendChild(div)
+    extend(div, 40, %)
+    fade(div, .95, %)
+    canvas.removeChild(parent)
+    cb()
+
+func laserFamily(baseY, baseH, baseColor, cb)
+    centralH: baseH / 3
+    periH: baseH / 6 # X2
+    borderH: baseH / 6 # X2
+    periColor: baseColor.adjust(0.9)
+    borderColor: baseColor.adjust(0.8)
+    horiLaser(baseY, centralH, baseColor, 2, cb)
+    setTimeout(%, TICK * 2)
+    horiLaser(baseY - periH, periH * 2 + centralH, periColor, 1, (): null)
+    setTimeout(%, TICK * 2)
+    horiLaser(baseY - periH - borderH, baseH, borderColor, 0, (): null)
+
+func aaHeight()
+    return Math.max.apply(null, jQuery('.aa') |: $.clientHeight)
+
+func focus()
+    func laser(n)
+        h: 12
+        y: h * n
+        if aaHeight() < y
+            laserFamily(y, h, fromRGB(199, 255, 183), ():
+                display.style.overflow: 'visible'
+            )
+            return
+        laserFamily(y, h, fromRGB(199, 255, 183), ():
+            display.style.height: y + 'px'
+        )
+        setTimeout(%, TICK)
+        laser(n + 1)
+    laser(0)
+
+focus()
