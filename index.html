@@ -24,13 +24,37 @@ body {
     white-space: pre;
     line-height: 0.96em;
 }
+
+span.label {
+    text-decoration: underline;
+}
+
+span.label:hover {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.bullet {
+    color: #ddd;
+    position: relative;
+    opacity: 0.8;
+    text-align: center;
+}
+
+.bullet a {
+    color: #cde;
+}
+
+.bullet a:hover {
+    text-decoration: none;
+}
 </style>
 </head>
 <body>
 <div class='parent'>
 <div class='aa'><span id='lt_anchor'>.</span>--.
 |  |
-|  |       ___  ___
+|  |       ___  ___                   <span id='bullet_anchor'> </span>
 |  |       \_|  |  |
 |  |____  ____  |  |___
 |       \ `.  | |      |
@@ -42,10 +66,10 @@ body {
 \_______/ /___| \______/  ::::
                           :::::::: .::::::. .::::::. :::  ::: .::::::.
                           :::::::: :::::::: :::::::: :::  ::: ::''''':
-     Blog                 ::::     :::  ::: :::      :::  ::: ::.....
-              Twitter     ::::     :::  ::: :::      :::  :::  '''''::
-    Codes                 ::::     :::::::: :::::::: :::::::: :.....::
-              About       ::::     `::::::' `::::::' `::::::' `::::::'
+     <span class='label'>Blog</span>                 ::::     :::  ::: :::      :::  ::: ::.....
+              <span class='label'>Twitter</span>     ::::     :::  ::: :::      :::  :::  '''''::
+    <span class='label'>Codes</span>                 ::::     :::::::: :::::::: :::::::: :.....::
+              <span class='label'>About</span>       ::::     `::::::' `::::::' `::::::' `::::::'
                                                                       <span id='rb_anchor'>&nbsp;</span></div>
 </div>
 <div class='parent' id='canvas'></div>

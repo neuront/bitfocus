@@ -1,7 +1,22 @@
-TICK: 18
-
+# nodes
 canvas: document.getElementById('canvas')
 display: document.getElementById('display')
+bullet: (():
+    a: document.getElementById('bullet_anchor')
+    parent: document.createElement('div')
+    jQuery(parent).addClass('parent')
+    div: document.createElement('div')
+    jQuery(div).addClass('bullet')
+    div.style.top: a.offsetTop + 'px'
+    div.style.left: a.offsetLeft + 'px'
+    div.style.width: aaWidth() - a.offsetLeft + 'px'
+    canvas.appendChild(parent)
+    parent.appendChild(div)
+    return div
+)()
+
+# beam animation
+TICK: 18
 
 func bodyW()
     return document.body.clientWidth
@@ -77,8 +92,7 @@ func aaWidth()
 BEAM_HEIGHT: 12
 
 func prepareCovers()
-    console.log(aaHeight())
-    count: Math.ceil(aaHeight() / BEAM_HEIGHT)
+    count: Math.ceil(aaHeight() / BEAM_HEIGHT) + 1
     covers: []
     func cover(n)
         if n = count
@@ -107,7 +121,7 @@ func focus(list)
             return
         head: list.shift()
         laserFamily(head.topY, BEAM_HEIGHT, fromRGB(199, 255, 183), ():
-            head.parentNode.removeChild(head)
+            canvas.removeChild(head.parentNode)
         )
         setTimeout(%, TICK * wait)
         if wait < 10
@@ -116,3 +130,65 @@ func focus(list)
     laser(20)
 
 focus(covers)
+
+# node selection
+selection: {}
+
+jQuery('span.label').click(():
+    RADIUS: 4
+    if selection.lastSelected
+        canvas.removeChild(selection.lastSelected)
+
+    import this
+    me: this
+    key: me.innerHTML
+
+    bullet.style.display: 'none'
+    bullet.innerHTML: {
+        Blog: '''<img src='http://blog.bitfoc.us/favicon.ico'>&nbsp;Bit Focus Blog<br>
+                 <br>
+                 <a href='http://blog.bitfoc.us/tag=C%2b%2b'>C++</a>
+                 <a href='http://blog.bitfoc.us/tag=Python'>Python</a>
+                 Programming<br>
+                 <a href='http://blog.bitfoc.us/?tag=Web%20Server'>Web designs</a><br>
+                 And also <a href='http://blog.bitfoc.us/?tag=Algorithm'>algorithm</a> implements
+                 ''',
+        Twitter: '''Follow <a href='https://twitter.com/neuront'>@neuront</a> on twitter<br>
+                    Gossip on programming and animation
+                 ''',
+        Codes: '''What I'm coding now?<br>
+                  <a href='https://github.com/neuront/stekinscript'>Stekinscript</a> -  A language to generate Javascript code<br>
+                  <a href='https://github.com/neuront/nijipress'>Nijipress</a> - Blog program in Python on Google App Engine''',
+        About: '''Bit Focus<br><br>
+                  Creator: Neuron Teckid
+               ''',
+    }[key]
+    jQuery(bullet).slideDown()
+
+    laserFamily(me.offsetTop, BEAM_HEIGHT, fromRGB(216, 216, 216), %)
+
+    parent: document.createElement('div')
+    jQuery(parent).addClass('parent')
+    div: document.createElement('div')
+    div.style.cursor: 'pointer'
+    div.style.backgroundColor: 'white'
+    div.style.height: jQuery(me).height() + 2 * RADIUS + 'px'
+    div.style.width: jQuery(me).width() + 2 * RADIUS + 'px'
+    div.style.top: me.offsetTop - RADIUS + 'px'
+    div.style.left: me.offsetLeft - RADIUS + 'px'
+    div.style.position: 'relative'
+    div.style.borderRadius: RADIUS + 'px'
+    div.style.opacity: 0.3
+    canvas.appendChild(parent)
+    parent.appendChild(div)
+
+    selection.lastSelected: parent
+
+    parent.onclick: ():
+        window.location: {
+            Blog: 'http://blog.bitfoc.us/',
+            Twitter: 'https://twitter.com/neuront',
+            Codes: 'https://github.com/neuront',
+            About: 'javascript:void(0)',
+        }[key]
+)
