@@ -1,4 +1,4 @@
-TICK: 20
+TICK: 18
 
 canvas: document.getElementById('canvas')
 display: document.getElementById('display')
@@ -23,16 +23,16 @@ func fromRGB(r, g, b)
 
 func horiLaser(y, h, color, z, cb)
     func extend(node, width, cb)
-        STEP: 20
+        STEP: 64
         if bodyW() <= width
             node.style.width: bodyW() + 'px'
             return cb()
         node.style.width: width + 'px'
         setTimeout(%, TICK)
-        extend(node, width + 60, cb)
+        extend(node, width + STEP, cb)
 
     func fade(node, opacity, cb)
-        RATE: 0.15
+        RATE: 0.03
         if opacity <= 0
             node.style.opacity: 0
             return cb()
@@ -48,12 +48,13 @@ func horiLaser(y, h, color, z, cb)
     div.style.position: 'relative'
     div.style.top: y + 'px'
     div.style.zIndex: z
+    div.style.opacity: 0.6
     canvas.appendChild(parent)
     parent.appendChild(div)
     extend(div, 40, %)
-    fade(div, .95, %)
-    canvas.removeChild(parent)
     cb()
+    fade(div, .45, %)
+    canvas.removeChild(parent)
 
 func laserFamily(baseY, baseH, baseColor, cb)
     centralH: baseH / 3
@@ -61,29 +62,57 @@ func laserFamily(baseY, baseH, baseColor, cb)
     borderH: baseH / 6 # X2
     periColor: baseColor.adjust(0.9)
     borderColor: baseColor.adjust(0.8)
-    horiLaser(baseY, centralH, baseColor, 2, cb)
-    setTimeout(%, TICK * 2)
-    horiLaser(baseY - periH, periH * 2 + centralH, periColor, 1, (): null)
-    setTimeout(%, TICK * 2)
-    horiLaser(baseY - periH - borderH, baseH, borderColor, 0, (): null)
+    horiLaser(baseY + periH + borderH , centralH, baseColor, 2, cb)
+    setTimeout(%, TICK / 10)
+    horiLaser(baseY + borderH, periH * 2 + centralH, periColor, 1, (): null)
+    setTimeout(%, TICK / 10)
+    horiLaser(baseY, baseH, borderColor, 0, (): null)
 
 func aaHeight()
-    return Math.max.apply(null, jQuery('.aa') |: $.clientHeight)
+    return jQuery('#rb_anchor')[0].offsetTop - jQuery('#lt_anchor')[0].offsetTop
 
-func focus()
-    func laser(n)
-        h: 12
-        y: h * n
-        if aaHeight() < y
-            laserFamily(y, h, fromRGB(199, 255, 183), ():
-                display.style.overflow: 'visible'
-            )
+func aaWidth()
+    return jQuery('#rb_anchor')[0].offsetLeft - jQuery('#lt_anchor')[0].offsetLeft
+
+BEAM_HEIGHT: 12
+
+func prepareCovers()
+    console.log(aaHeight())
+    count: Math.ceil(aaHeight() / BEAM_HEIGHT)
+    covers: []
+    func cover(n)
+        if n = count
             return
-        laserFamily(y, h, fromRGB(199, 255, 183), ():
-            display.style.height: y + 'px'
-        )
-        setTimeout(%, TICK)
-        laser(n + 1)
-    laser(0)
+        parent: document.createElement('div')
+        jQuery(parent).addClass('parent')
+        div: document.createElement('div')
+        div.style.backgroundColor: '#1a1a1a'
+        div.style.height: BEAM_HEIGHT + 'px'
+        div.style.width: aaWidth() + 'px'
+        div.style.top: BEAM_HEIGHT * n + 'px'
+        div.style.position: 'relative'
+        div.topY: BEAM_HEIGHT * n
+        canvas.appendChild(parent)
+        parent.appendChild(div)
+        covers.push(div)
+        cover(n + 1)
+    cover(0)
+    return covers
 
-focus()
+covers: prepareCovers().sort((): Math.floor(Math.random() * 100) % 2 = 1)
+
+func focus(list)
+    func laser(wait)
+        if list.length = 0
+            return
+        head: list.shift()
+        laserFamily(head.topY, BEAM_HEIGHT, fromRGB(199, 255, 183), ():
+            head.parentNode.removeChild(head)
+        )
+        setTimeout(%, TICK * wait)
+        if wait < 10
+            return laser(wait)
+        laser(wait - 1)
+    laser(20)
+
+focus(covers)
