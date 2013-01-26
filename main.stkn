@@ -159,8 +159,10 @@ jQuery('span.label').click(():
         Codes: '''What I'm coding now?<br>
                   <a href='https://github.com/neuront/stekinscript'>Stekinscript</a> -  A language to generate Javascript code<br>
                   <a href='https://github.com/neuront/nijipress'>Nijipress</a> - Blog program in Python on Google App Engine''',
-        About: '''Bit Focus<br><br>
-                  Creator: Neuron Teckid
+        About: '''Bit Focus<br>
+                  Creator: Neuron Teckid<br>
+                  &nbsp;<br>
+                  Thanks for your visiting
                ''',
     }[key]
     jQuery(bullet).slideDown()
