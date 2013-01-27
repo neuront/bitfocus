@@ -134,13 +134,20 @@ focus(covers)
 # node selection
 selection: {}
 
-jQuery('span.label').click(():
+func setHover(node, f)
+    node.onmouseover: f
+
+func selectNode()
+    import this
+    me: this
+
+    jQuery('span.label') |: setHover($, (): null)
+    setTimeout(%, 1)
     RADIUS: 4
     if selection.lastSelected
         canvas.removeChild(selection.lastSelected)
+        selection.lastSelected: null
 
-    import this
-    me: this
     key: me.innerHTML
 
     bullet.style.display: 'none'
@@ -185,6 +192,7 @@ jQuery('span.label').click(():
     parent.appendChild(div)
 
     selection.lastSelected: parent
+    jQuery('span.label') |: setHover($, selectNode)
 
     parent.onclick: ():
         window.location: {
@@ -193,4 +201,5 @@ jQuery('span.label').click(():
             Codes: 'https://github.com/neuront',
             About: 'javascript:void(0)',
         }[key]
-)
+
+jQuery('span.label') |: setHover($, selectNode)
