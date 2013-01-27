@@ -25,11 +25,12 @@ body {
     line-height: 0.96em;
 }
 
-span.label {
+a.label {
+    color: #cfb;
     text-decoration: underline;
 }
 
-span.label:hover {
+a.label:hover {
     cursor: pointer;
     text-decoration: none;
 }
@@ -46,15 +47,16 @@ span.label:hover {
 }
 
 .bullet a:hover {
+    color: white;
     text-decoration: none;
 }
 </style>
 </head>
 <body>
 <div class='parent'>
-<div class='aa'><span id='lt_anchor'>.</span>--.
-|  |
-|  |       ___  ___                   <span id='bullet_anchor'> </span>
+<div class='aa' id='display'><span id='lt_anchor'>.</span>--.
+|  |                               <span id='bullet_anchor'> </span>
+|  |       ___  ___
 |  |       \_|  |  |
 |  |____  ____  |  |___
 |       \ `.  | |      |
@@ -66,10 +68,10 @@ span.label:hover {
 \_______/ /___| \______/  ::::
                           :::::::: .::::::. .::::::. :::  ::: .::::::.
                           :::::::: :::::::: :::::::: :::  ::: ::''''':
-     <span class='label'>Blog</span>                 ::::     :::  ::: :::      :::  ::: ::.....
-              <span class='label'>Twitter</span>     ::::     :::  ::: :::      :::  :::  '''''::
-    <span class='label'>Codes</span>                 ::::     :::::::: :::::::: :::::::: :.....::
-              <span class='label'>About</span>       ::::     `::::::' `::::::' `::::::' `::::::'
+     <a href='http://blog.bitfoc.us/' class='label'>Blog</a>                 ::::     :::  ::: :::      :::  ::: ::.....
+              <a href='https://twitter.com/neuront' class='label'>Twitter</a>     ::::     :::  ::: :::      :::  :::  '''''::
+    <a href='https://github.com/neuront' class='label'>Codes</a>                 ::::     :::::::: :::::::: :::::::: :.....::
+              <a href='javascript:void(0)' class='label'>About</a>       ::::     `::::::' `::::::' `::::::' `<span class='label'>::::::</span>'
                                                                       <span id='rb_anchor'>&nbsp;</span></div>
 </div>
 <div class='parent' id='canvas'></div>

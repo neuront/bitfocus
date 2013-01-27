@@ -36,6 +36,14 @@ func fromRGB(r, g, b)
           ,
     }
 
+func fade(node, opacity, rate, cb)
+    if opacity <= 0
+        node.style.opacity: 0
+        return cb()
+    node.style.opacity: opacity
+    setTimeout(%, TICK)
+    fade(node, opacity - rate, rate, cb)
+
 func horiLaser(y, h, color, z, cb)
     func extend(node, width, cb)
         STEP: 64
@@ -45,15 +53,6 @@ func horiLaser(y, h, color, z, cb)
         node.style.width: width + 'px'
         setTimeout(%, TICK)
         extend(node, width + STEP, cb)
-
-    func fade(node, opacity, cb)
-        RATE: 0.03
-        if opacity <= 0
-            node.style.opacity: 0
-            return cb()
-        node.style.opacity: opacity
-        setTimeout(%, TICK)
-        fade(node, opacity - RATE, cb)
 
     parent: document.createElement('div')
     jQuery(parent).toggleClass('parent')
@@ -68,7 +67,7 @@ func horiLaser(y, h, color, z, cb)
     parent.appendChild(div)
     extend(div, 40, %)
     cb()
-    fade(div, .45, %)
+    fade(div, .45, 0.03, %)
     canvas.removeChild(parent)
 
 func laserFamily(baseY, baseH, baseColor, cb)
@@ -89,10 +88,10 @@ func aaHeight()
 func aaWidth()
     return jQuery('#rb_anchor')[0].offsetLeft - jQuery('#lt_anchor')[0].offsetLeft
 
-BEAM_HEIGHT: 12
+BEAM_HEIGHT: 18
 
 func prepareCovers()
-    count: Math.ceil(aaHeight() / BEAM_HEIGHT) + 1
+    count: Math.ceil(aaHeight() / BEAM_HEIGHT) + 1 # +1 for underscore at the last line
     covers: []
     func cover(n)
         if n = count
@@ -113,12 +112,10 @@ func prepareCovers()
     cover(0)
     return covers
 
-covers: prepareCovers().sort((): Math.floor(Math.random() * 100) % 2 = 1)
-
 func focus(list)
     func laser(wait)
         if list.length = 0
-            return
+            return jQuery('.label') |: setHover($, selectNode)
         head: list.shift()
         laserFamily(head.topY, BEAM_HEIGHT, fromRGB(199, 255, 183), ():
             canvas.removeChild(head.parentNode)
@@ -129,7 +126,10 @@ func focus(list)
         laser(wait - 1)
     laser(20)
 
-focus(covers)
+func startAnimate()
+    focus(prepareCovers().sort((): Math.floor(Math.random() * 100 + Math.random() * 33) % 2 = 1))
+
+startAnimate()
 
 # node selection
 selection: {}
@@ -137,41 +137,48 @@ selection: {}
 func setHover(node, f)
     node.onmouseover: f
 
+func clearSelected()
+    if selection.lastSelected
+        canvas.removeChild(selection.lastSelected)
+        selection.lastSelected: null
+        bullet.style.display: 'none'
+
 func selectNode()
     import this
     me: this
 
-    jQuery('span.label') |: setHover($, (): null)
+    jQuery('.label') |: setHover($, (): null)
     setTimeout(%, 1)
+    clearSelected()
     RADIUS: 4
-    if selection.lastSelected
-        canvas.removeChild(selection.lastSelected)
-        selection.lastSelected: null
-
     key: me.innerHTML
 
-    bullet.style.display: 'none'
     bullet.innerHTML: {
-        Blog: '''<img src='http://blog.bitfoc.us/favicon.ico'>&nbsp;Bit Focus Blog<br>
+        Blog: '''Bit Focus Blog<br>
                  <br>
                  <a href='http://blog.bitfoc.us/tag=C%2b%2b'>C++</a>
                  <a href='http://blog.bitfoc.us/tag=Python'>Python</a>
                  Programming<br>
-                 <a href='http://blog.bitfoc.us/?tag=Web%20Server'>Web designs</a><br>
-                 And also <a href='http://blog.bitfoc.us/?tag=Algorithm'>algorithm</a> implements
+                 <a href='http://blog.bitfoc.us/?tag=Web%20Server'>Web</a> developing<br>
+                 And <a href='http://blog.bitfoc.us/?tag=Algorithm'>algorithm</a> implements
                  ''',
         Twitter: '''Follow <a href='https://twitter.com/neuront'>@neuront</a> on twitter<br>
                     Gossip on programming and animation
                  ''',
-        Codes: '''What I'm coding now?<br>
+        Codes: '''What I'm coding now<br>
                   <a href='https://github.com/neuront/stekinscript'>Stekinscript</a> -  A language to generate Javascript code<br>
                   <a href='https://github.com/neuront/nijipress'>Nijipress</a> - Blog program in Python on Google App Engine''',
-        About: '''Bit Focus<br>
-                  Creator: Neuron Teckid<br>
+        About: '''Bit Focus Homepage<br>
+                  Designer: Neuron Teckid<br>
                   &nbsp;<br>
                   Thanks for your visiting
                ''',
+        '::::::':: '''You have discover a time machine here!<br>
+                      <span id='jumpback'>Click to jump back to<br>
+                      <span id='eggtime'></span> seconds before</span>'''
     }[key]
+    ifnot me.href
+        enableEgg()
     jQuery(bullet).slideDown()
 
     laserFamily(me.offsetTop, BEAM_HEIGHT, fromRGB(216, 216, 216), %)
@@ -192,14 +199,33 @@ func selectNode()
     parent.appendChild(div)
 
     selection.lastSelected: parent
-    jQuery('span.label') |: setHover($, selectNode)
+    jQuery('.label') |: setHover($, selectNode)
 
-    parent.onclick: ():
-        window.location: {
-            Blog: 'http://blog.bitfoc.us/',
-            Twitter: 'https://twitter.com/neuront',
-            Codes: 'https://github.com/neuront',
-            About: 'javascript:void(0)',
-        }[key]
+    if me.href
+        parent.onclick: ():
+            window.location: me.href
 
-jQuery('span.label') |: setHover($, selectNode)
+# east egg
+
+startTime: *Date()
+
+func enableEgg()
+    egg: document.getElementById('jumpback')
+    egg.onclick: ():
+        egg.onclick: (): null
+        jQuery('.label') |: setHover($, (): null)
+        clearSelected()
+        fade(display, 0.8, 0.04, %)
+        display.style.opacity: 1
+        startAnimate()
+    displayTime: document.getElementById('eggtime')
+    func refreshTime()
+        displayTime.innerHTML: format3((*Date() - startTime) / 1000)
+        setTimeout(%, TICK)
+        refreshTime()
+    refreshTime()
+
+    func format3(n)
+        i: Math.floor(n)
+        r: n - i
+        return i + r.toPrecision(3).substr(1, 4)
