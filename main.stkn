@@ -44,7 +44,7 @@ func fade(node, opacity, rate, cb)
     setTimeout(%, TICK)
     fade(node, opacity - rate, rate, cb)
 
-func horiLaser(y, h, color, z, cb)
+func horiBeam(y, h, color, z, cb)
     func extend(node, width, cb)
         STEP: 64
         if bodyW() <= width
@@ -55,7 +55,7 @@ func horiLaser(y, h, color, z, cb)
         extend(node, width + STEP, cb)
 
     parent: document.createElement('div')
-    jQuery(parent).toggleClass('parent')
+    jQuery(parent).addClass('parent')
     div: document.createElement('div')
     div.style.height: h + 'px'
     div.style.backgroundColor: color.str()
@@ -70,17 +70,17 @@ func horiLaser(y, h, color, z, cb)
     fade(div, .45, 0.03, %)
     canvas.removeChild(parent)
 
-func laserFamily(baseY, baseH, baseColor, cb)
+func beamFamily(baseY, baseH, baseColor, cb)
     centralH: baseH / 3
     periH: baseH / 6 # X2
     borderH: baseH / 6 # X2
     periColor: baseColor.adjust(0.9)
     borderColor: baseColor.adjust(0.8)
-    horiLaser(baseY + periH + borderH , centralH, baseColor, 2, cb)
+    horiBeam(baseY + periH + borderH , centralH, baseColor, 2, cb)
     setTimeout(%, TICK / 10)
-    horiLaser(baseY + borderH, periH * 2 + centralH, periColor, 1, (): null)
+    horiBeam(baseY + borderH, periH * 2 + centralH, periColor, 1, (): null)
     setTimeout(%, TICK / 10)
-    horiLaser(baseY, baseH, borderColor, 0, (): null)
+    horiBeam(baseY, baseH, borderColor, 0, (): null)
 
 func aaHeight()
     return jQuery('#rb_anchor')[0].offsetTop - jQuery('#lt_anchor')[0].offsetTop
@@ -113,19 +113,19 @@ func prepareCovers()
     return covers
 
 func focus(list)
-    func laser(wait)
+    func beam(wait)
         if list.length = 0
             return jQuery('.label') |:
                 $.onmouseover: selectNode
         head: list.shift()
-        laserFamily(head.topY, BEAM_HEIGHT, fromRGB(199, 255, 183), ():
+        beamFamily(head.topY, BEAM_HEIGHT, fromRGB(199, 255, 183), ():
             canvas.removeChild(head.parentNode)
         )
         setTimeout(%, TICK * wait)
         if wait < 10
-            return laser(wait)
-        laser(wait - 1)
-    laser(20)
+            return beam(wait)
+        beam(wait - 1)
+    beam(20)
 
 func startAnimate()
     focus(prepareCovers().sort((): Math.floor(Math.random() * 100 + Math.random() * 33) % 2 = 1))
@@ -177,7 +177,7 @@ func selectNode()
         enableEgg()
     jQuery(bullet).slideDown()
 
-    laserFamily(@offsetTop, BEAM_HEIGHT, fromRGB(216, 216, 216), %)
+    beamFamily(@offsetTop, BEAM_HEIGHT, fromRGB(216, 216, 216), %)
 
     parent: document.createElement('div')
     jQuery(parent).addClass('parent')
