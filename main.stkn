@@ -169,7 +169,7 @@ func selectNode()
         About: '''Bit Focus Homepage<br>
                   Designer: Neuron Teckid<br>
                   &nbsp;<br>
-                  Thanks for your visiting
+                  Thanks for your visit!
                ''',
         '::::::':: '''You have discover a time machine here!<br>
                       <span id='jumpback'>Click to jump back to<br>
