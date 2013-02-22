@@ -1,3 +1,5 @@
+jQuery(document).ready(%)
+
 # nodes
 canvas: document.getElementById('canvas')
 display: document.getElementById('display')
