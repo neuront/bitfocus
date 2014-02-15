@@ -1,231 +1,401 @@
 jQuery(document).ready(%)
 
-# nodes
 canvas: document.getElementById('canvas')
 display: document.getElementById('display')
-bullet: (():
-    a: document.getElementById('bullet_anchor')
-    parent: document.createElement('div')
-    jQuery(parent).addClass('parent')
-    div: document.createElement('div')
-    jQuery(div).addClass('bullet')
-    div.style.top: a.offsetTop + 'px'
-    div.style.left: a.offsetLeft + 'px'
-    div.style.width: aaWidth() - a.offsetLeft + 'px'
-    canvas.appendChild(parent)
-    parent.appendChild(div)
-    return div
-)()
 
-# beam animation
-TICK: 18
-
-func bodyW()
-    return document.body.clientWidth
-
-func fromRGB(r, g, b)
-    func hex2(x)
-        s: Math.floor(x).toString(16)
-        if s.length = 1
-            return '0' + s
-        return s
-    return {
-        str: ():
-            return '#' + hex2(r) + hex2(g) + hex2(b)
-          ,
-        adjust: (ratio):
-            return fromRGB(r * ratio, g * ratio, b * ratio)
-          ,
-    }
+func randomColor()
+    letters: '0123456789ABCDEF'.split('')
+    return '#c' + letters[Math.round(Math.random() * 15)] +
+           'f' + letters[Math.round(Math.random() * 15)] +
+           'b' + letters[Math.round(Math.random() * 15)]
 
 func fade(node, opacity, rate, cb)
     if opacity <= 0
         node.style.opacity: 0
         return cb()
+    node.style.backgroundColor: randomColor()
     node.style.opacity: opacity
-    setTimeout(%, TICK)
+    setTimeout(%, 20)
     fade(node, opacity - rate, rate, cb)
 
-func horiBeam(y, h, color, z, cb)
-    func extend(node, width, cb)
-        STEP: 64
-        if bodyW() <= width
-            node.style.width: bodyW() + 'px'
-            return cb()
-        node.style.width: width + 'px'
-        setTimeout(%, TICK)
-        extend(node, width + STEP, cb)
-
-    parent: document.createElement('div')
-    jQuery(parent).addClass('parent')
-    div: document.createElement('div')
-    div.style.height: h + 'px'
-    div.style.backgroundColor: color.str()
-    div.style.position: 'relative'
-    div.style.top: y + 'px'
-    div.style.zIndex: z
-    div.style.opacity: 0.6
-    canvas.appendChild(parent)
-    parent.appendChild(div)
-    extend(div, 40, %)
-    cb()
-    fade(div, .45, 0.03, %)
-    canvas.removeChild(parent)
-
-func beamFamily(baseY, baseH, baseColor, cb)
-    centralH: baseH / 3
-    periH: baseH / 6 # X2
-    borderH: baseH / 6 # X2
-    periColor: baseColor.adjust(0.9)
-    borderColor: baseColor.adjust(0.8)
-    horiBeam(baseY + periH + borderH , centralH, baseColor, 2, cb)
-    setTimeout(%, TICK / 10)
-    horiBeam(baseY + borderH, periH * 2 + centralH, periColor, 1, (): null)
-    setTimeout(%, TICK / 10)
-    horiBeam(baseY, baseH, borderColor, 0, (): null)
-
 func aaHeight()
-    return jQuery('#rb_anchor')[0].offsetTop - jQuery('#lt_anchor')[0].offsetTop
+    return jQuery('#rb_anchor')[0].offsetTop -
+           jQuery('#lt_anchor')[0].offsetTop
 
 func aaWidth()
-    return jQuery('#rb_anchor')[0].offsetLeft - jQuery('#lt_anchor')[0].offsetLeft
+    return jQuery('#rb_anchor')[0].offsetLeft -
+           jQuery('#lt_anchor')[0].offsetLeft
 
-BEAM_HEIGHT: 18
-
-func prepareCovers()
-    count: Math.ceil(aaHeight() / BEAM_HEIGHT) + 1 # +1 for underscore at the last line
-    covers: []
-    func cover(n)
-        if n = count
-            return
-        parent: document.createElement('div')
-        jQuery(parent).addClass('parent')
-        div: document.createElement('div')
-        div.style.backgroundColor: '#1a1a1a'
-        div.style.height: BEAM_HEIGHT + 'px'
-        div.style.width: aaWidth() + 'px'
-        div.style.top: BEAM_HEIGHT * n + 'px'
-        div.style.position: 'relative'
-        div.topY: BEAM_HEIGHT * n
-        canvas.appendChild(parent)
-        parent.appendChild(div)
-        covers.push(div)
-        cover(n + 1)
-    cover(0)
-    return covers
-
-func focus(list)
-    func beam(wait)
-        if list.length = 0
-            return jQuery('.label') |:
-                $.onmouseover: selectNode
-        head: list.shift()
-        beamFamily(head.topY, BEAM_HEIGHT, fromRGB(199, 255, 183), ():
-            canvas.removeChild(head.parentNode)
-        )
-        setTimeout(%, TICK * wait)
-        if wait < 10
-            return beam(wait)
-        beam(wait - 1)
-    beam(20)
-
-func startAnimate()
-    focus(prepareCovers().sort((): Math.floor(Math.random() * 100 + Math.random() * 33) % 2 = 1))
-
-startAnimate()
-
-# node selection
-selection: {}
-
-func clearSelected()
-    if selection.lastSelected
-        canvas.removeChild(selection.lastSelected)
-        selection.lastSelected: null
-        bullet.style.display: 'none'
-
-func selectNode()
-    jQuery('.label') |:
-        $.onmouseover: (): null
-    setTimeout(%, 1)
-    clearSelected()
-    RADIUS: 4
-    key: @innerHTML
-
-    bullet.innerHTML: {
-        Blog: '''Bit Focus Blog<br>
-                 <br>
-                 <a href='http://blog.bitfoc.us/tag=C%2b%2b'>C++</a>
-                 <a href='http://blog.bitfoc.us/tag=Python'>Python</a>
-                 Programming<br>
-                 <a href='http://blog.bitfoc.us/?tag=Web%20Server'>Web</a> developing<br>
-                 And <a href='http://blog.bitfoc.us/?tag=Algorithm'>algorithm</a> implements
-                 ''',
-        Twitter: '''Follow <a href='https://twitter.com/neuront'>@neuront</a> on twitter<br>
-                    Gossip on programming and animation
-                 ''',
-        Codes: '''What I'm coding now<br>
-                  <a href='https://github.com/neuront/stekinscript'>Stekinscript</a> -  A language to generate Javascript code<br>
-                  <a href='https://github.com/neuront/nijipress'>Nijipress</a> - Blog program in Python on Google App Engine''',
-        About: '''Bit Focus Homepage<br>
-                  Designer: Neuron Teckid<br>
-                  &nbsp;<br>
-                  Thanks for your visit!
-               ''',
-        '::::::':: '''You have discover a time machine here!<br>
-                      <span id='jumpback'>Click to jump back to<br>
-                      <span id='eggtime'></span> seconds before</span>'''
-    }[key]
-    ifnot @href
-        enableEgg()
-    jQuery(bullet).slideDown()
-
-    beamFamily(@offsetTop, BEAM_HEIGHT, fromRGB(216, 216, 216), %)
-
+func createFloatingPiece()
     parent: document.createElement('div')
     jQuery(parent).addClass('parent')
     div: document.createElement('div')
-    div.style.cursor: 'pointer'
-    div.style.backgroundColor: 'white'
-    div.style.height: jQuery(@).height() + 2 * RADIUS + 'px'
-    div.style.width: jQuery(@).width() + 2 * RADIUS + 'px'
-    div.style.top: @offsetTop - RADIUS + 'px'
-    div.style.left: @offsetLeft - RADIUS + 'px'
     div.style.position: 'relative'
-    div.style.borderRadius: RADIUS + 'px'
-    div.style.opacity: 0.3
-    canvas.appendChild(parent)
     parent.appendChild(div)
+    canvas.appendChild(parent)
+    div.remove: (): jQuery(parent).remove()
+    return div
 
-    selection.lastSelected: parent
-    jQuery('.label') |:
-        $.onmouseover: selectNode
+###########
+# OPENING #
+###########
 
-    if @href
-        parent.onclick: ():
-            window.location: @href
+TILE_SIZE: 8
 
-# east egg
+height: Math.ceil(aaHeight() / TILE_SIZE) + 1 # +1 for underscore at the last line
+width: Math.ceil(aaWidth() / TILE_SIZE) + 1
 
-startTime: *Date()
+covers: []
+func cover(x, y)
+    if y = height
+        return
 
-func enableEgg()
-    egg: document.getElementById('jumpback')
-    egg.onclick: ():
-        egg.onclick: (): null
-        jQuery('.label') |:
-            $.onmouseover: (): null
-        clearSelected()
-        fade(display, 0.8, 0.04, %)
-        display.style.opacity: 1
-        startAnimate()
-    displayTime: document.getElementById('eggtime')
-    func refreshTime()
-        displayTime.innerHTML: format3((*Date() - startTime) / 1000)
-        setTimeout(%, TICK)
-        refreshTime()
-    refreshTime()
+    div: createFloatingPiece()
+    div.style.backgroundColor: '#c8f0b8'
+    div.style.height: TILE_SIZE + 'px'
+    div.style.width: TILE_SIZE + 'px'
+    div.style.top: TILE_SIZE * y + 'px'
+    div.style.left: TILE_SIZE * x + 'px'
+    covers.push(div)
 
-    func format3(n)
-        i: Math.floor(n)
-        r: n - i
-        return i + r.toPrecision(3).substr(1, 4)
+    if x + 1 = width
+        cover(0, y + 1)
+    else
+        cover(x + 1, y)
+cover(0, 0)
+
+DIRECTIONS: {
+    right: {
+        delta: [1, 0],
+        step: (status): status.width,
+        split: (status):
+            next_direct: 'down'
+            if status.height = 1
+                return []
+            if status.width = 1
+                return [{
+                    width: 1,
+                    height: status.height - 1,
+                    x: status.x,
+                    y: status.y + 1,
+                    direct: next_direct,
+                }]
+            widthA: Math.floor(status.width / 2)
+            widthB: status.width - widthA
+            return [{
+                width: widthA,
+                height: status.height - 1,
+                x: status.x + widthA - 1,
+                y: status.y + 1,
+                direct: next_direct,
+            }, {
+                width: widthB,
+                height: status.height - 1,
+                x: status.x + status.width - 1,
+                y: status.y + 1,
+                direct: next_direct,
+            }]
+    },
+    down: {
+        delta: [0, 1],
+        step: (status): status.height,
+        split: (status):
+            next_direct: 'left'
+            if status.width = 1
+                return []
+            if status.height = 1
+                return [{
+                    width: status.width - 1,
+                    height: 1,
+                    x: status.x - 1,
+                    y: status.y,
+                    direct: next_direct,
+                }]
+            heightA: Math.floor(status.height / 2)
+            heightB: status.height - heightA
+            return [{
+                width: status.width - 1,
+                height: heightA,
+                x: status.x - 1,
+                y: status.y + heightA - 1,
+                direct: next_direct,
+            }, {
+                width: status.width - 1,
+                height: heightB,
+                x: status.x - 1,
+                y: status.y + status.height - 1,
+                direct: next_direct,
+            }]
+    },
+    left: {
+        delta: [-1, 0],
+        step: (status): status.width,
+        split: (status):
+            next_direct: 'up'
+            if status.height = 1
+                return []
+            if status.width = 1
+                return [{
+                    width: 1,
+                    height: status.height - 1,
+                    x: status.x,
+                    y: status.y - 1,
+                    direct: next_direct
+                }]
+            widthA: Math.floor(status.width / 2)
+            widthB: status.width - widthA
+            return [{
+                width: widthA,
+                height: status.height - 1,
+                x: status.x - widthA + 1,
+                y: status.y - 1,
+                direct: next_direct,
+            }, {
+                width: widthB,
+                height: status.height - 1,
+                x: status.x - status.width + 1,
+                y: status.y - 1,
+                direct: next_direct,
+            }]
+    },
+    up: {
+        delta: [0, -1],
+        step: (status): status.height,
+        split: (status):
+            next_direct: 'right'
+            if status.width = 1
+                return []
+            if status.height = 1
+                return [{
+                    width: status.width - 1,
+                    height: 1,
+                    x: status.x + 1,
+                    y: status.y,
+                    direct: next_direct,
+                }]
+            heightA: Math.floor(status.height / 2)
+            heightB: status.height - heightA
+            return [{
+                width: status.width - 1,
+                height: heightA,
+                x: status.x + 1,
+                y: status.y - heightA + 1,
+                direct: next_direct,
+            }, {
+                width: status.width - 1,
+                height: heightB,
+                x: status.x + 1,
+                y: status.y - status.height + 1,
+                direct: next_direct,
+            }]
+    },
+}
+
+func start(status, act)
+    func turn(status)
+        direction: DIRECTIONS[status.direct]
+        direction.split(status) |:
+            nextStep($, DIRECTIONS[$.direct].step($), $.x, $.y)
+
+    func nextStep(status, step, x, y)
+        if step = 0
+            return turn(status)
+        setTimeout(%, 25)
+        act(x, y)
+        nextStep(status, step - 1, x + DIRECTIONS[status.direct].delta[0],
+                 y + DIRECTIONS[status.direct].delta[1])
+
+    if status.height = 0 || status.width = 0
+        return
+    nextStep(status, DIRECTIONS[status.direct].step(status), status.x,
+             status.y)
+
+func removeTile(x, y)
+    tile: covers[y * width + x]
+    fade(tile, .8, .05, (): tile.remove())
+
+halfW: Math.floor(width / 2)
+
+start({
+    width: halfW,
+    height: height,
+    x: 0,
+    y: height - 1,
+    direct: 'up',
+}, removeTile)
+start({
+    width: width - halfW,
+    height: height,
+    x: width - 1,
+    y: 0,
+    direct: 'down',
+}, removeTile)
+
+############
+# HOVERING #
+############
+
+func createFences(leftoff, upoff, width, height)
+    total: width + height
+    length: Math.floor(width * 2 / 3)
+
+    top: createFloatingPiece()
+    top.style.visibility: 'hidden'
+    top.style.backgroundColor: '#c8f0b8'
+    top.style.top: upoff + 'px'
+    top.style.height: '1px'
+    bottom: createFloatingPiece()
+    bottom.style.visibility: 'hidden'
+    bottom.style.backgroundColor: '#c8f0b8'
+    bottom.style.top: (upoff + height) + 'px'
+    bottom.style.height: '1px'
+
+    right: createFloatingPiece()
+    right.style.visibility: 'hidden'
+    right.style.backgroundColor: '#c8f0b8'
+    right.style.left: (leftoff + width) + 'px'
+    right.style.width: '1px'
+    left: createFloatingPiece()
+    left.style.visibility: 'hidden'
+    left.style.backgroundColor: '#c8f0b8'
+    left.style.left: leftoff + 'px'
+    left.style.width: '1px'
+
+    topCand: createFloatingPiece()
+    topCand.style.visibility: 'hidden'
+    topCand.style.backgroundColor: '#c8f0b8'
+    topCand.style.top: upoff + 'px'
+    topCand.style.left: leftoff + 'px'
+    topCand.style.height: '1px'
+
+    bottomCand: createFloatingPiece()
+    bottomCand.style.visibility: 'hidden'
+    bottomCand.style.backgroundColor: '#c8f0b8'
+    bottomCand.style.top: (upoff + height) + 'px'
+    bottomCand.style.height: '1px'
+
+    return {
+        tick: 0,
+        remove: ():
+            top.remove()
+            bottom.remove()
+            right.remove()
+            left.remove()
+            topCand.remove()
+            bottomCand.remove()
+        ,
+        nextTick: ():
+            if 0 <= @tick && @tick <= width - length
+                top.style.width: length + 'px'
+                top.style.left: (leftoff + @tick) + 'px'
+                bottom.style.width: length + 'px'
+                bottom.style.left: (leftoff + width - length - @tick) + 'px'
+
+                top.style.visibility: 'visible'
+                bottom.style.visibility: 'visible'
+                topCand.style.visibility: 'hidden'
+                bottomCand.style.visibility: 'hidden'
+            if width - length < @tick && @tick < width
+                top.style.width: (width - @tick) + 'px'
+                top.style.left: (leftoff + @tick) + 'px'
+                bottom.style.width: (width - @tick) + 'px'
+                bottom.style.left: leftoff + 'px'
+
+                top.style.visibility: 'visible'
+                bottom.style.visibility: 'visible'
+            if @tick = width
+                top.style.visibility: 'hidden'
+                bottom.style.visibility: 'hidden'
+
+            sideLen: length - (width - @tick)
+            if width - length < @tick && @tick <= width
+                right.style.top: upoff + 'px'
+                if sideLen < height
+                    right.style.height: sideLen + 'px'
+                    left.style.height: sideLen + 'px'
+                    left.style.top: (upoff + total - length - @tick) + 'px'
+                else
+                    right.style.height: height + 'px'
+                    left.style.height: height + 'px'
+                    left.style.top: upoff + 'px'
+
+                right.style.visibility: 'visible'
+                left.style.visibility: 'visible'
+            if width < @tick && @tick <= total - length
+                left.style.top: (upoff + total - length - @tick) + 'px'
+                if length < height
+                    right.style.height: length + 'px'
+                    right.style.top: (upoff + @tick - width) + 'px'
+                    left.style.height: length + 'px'
+                else
+                    right.style.height: height + 'px'
+                    right.style.top: upoff + 'px'
+                    left.style.height: height + 'px'
+
+                right.style.visibility: 'visible'
+                left.style.visibility: 'visible'
+            sideRest: total - @tick
+            if total - length < @tick && @tick < total
+                left.style.top: upoff + 'px'
+                if sideRest < height
+                    right.style.height: sideRest + 'px'
+                    left.style.height: sideRest + 'px'
+                    right.style.top: (upoff + @tick - width) + 'px'
+                else
+                    right.style.height: height + 'px'
+                    left.style.height: height + 'px'
+                    right.style.top: upoff + 'px'
+
+                right.style.visibility: 'visible'
+                left.style.visibility: 'visible'
+
+            if @tick = 0
+                right.style.visibility: 'hidden'
+                left.style.visibility: 'hidden'
+
+            candLen: @tick + length - total
+            if total < @tick + length
+                topCand.style.width: candLen + 'px'
+                bottomCand.style.width: candLen + 'px'
+                bottomCand.style.left: (leftoff + width - candLen) + 'px'
+
+                topCand.style.visibility: 'visible'
+                bottomCand.style.visibility: 'visible'
+
+            @tick: (@tick + 1) % total
+    }
+
+jQuery('.label').each(():
+    @tick: 0
+).hover(():
+    @fences: createFences(@offsetLeft - 4, @offsetTop - 2, @offsetWidth + 8,
+                          @offsetHeight + 4)
+    @fences.tick: @tick
+    fences: @fences
+    @nextTick: setInterval((): fences.nextTick(), 20)
+, ():
+    @tick: @fences.tick
+    @fences.remove()
+    clearTimeout(@nextTick)
+)
+
+#######
+# EGG #
+#######
+
+jQuery('#n').click(():
+    target: document.getElementById('nx')
+    me: @
+    if @fences
+        clearTimeout(@nextTick)
+        @fences.remove()
+        @fences: null
+        target.style.visibility: 'visible'
+        document.getElementById('ny').style.visibility: 'visible'
+    else
+        @fences: createFences(target.offsetLeft, target.offsetTop,
+                              target.offsetWidth, target.offsetHeight)
+        @nextTick: setInterval((): me.fences.nextTick(), 20)
+        target.style.visibility: 'hidden'
+        document.getElementById('ny').style.visibility: 'hidden'
+)
