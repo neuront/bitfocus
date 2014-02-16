@@ -1,7 +1,28 @@
 jQuery(document).ready(%)
 
+func createFloatingPiece()
+    parent: document.createElement('div')
+    jQuery(parent).addClass('parent')
+    div: document.createElement('div')
+    div.style.position: 'relative'
+    parent.appendChild(div)
+    canvas.appendChild(parent)
+    div.remove: (): jQuery(parent).remove()
+    return div
+
 canvas: document.getElementById('canvas')
 display: document.getElementById('display')
+bullet: (():
+    a: document.getElementById('bullet_anchor')
+    div: createFloatingPiece()
+    div.style.color: '#ddd'
+    div.style.position: 'relative'
+    div.style.textAlign: 'center'
+    div.style.top: a.offsetTop + 'px'
+    div.style.left: a.offsetLeft + 'px'
+    div.style.width: aaWidth() - a.offsetLeft + 'px'
+    return div
+)()
 
 func randomColor()
     letters: '0123456789ABCDEF'.split('')
@@ -26,16 +47,6 @@ func aaWidth()
     return jQuery('#rb_anchor')[0].offsetLeft -
            jQuery('#lt_anchor')[0].offsetLeft
 
-func createFloatingPiece()
-    parent: document.createElement('div')
-    jQuery(parent).addClass('parent')
-    div: document.createElement('div')
-    div.style.position: 'relative'
-    parent.appendChild(div)
-    canvas.appendChild(parent)
-    div.remove: (): jQuery(parent).remove()
-    return div
-
 ###########
 # OPENING #
 ###########
@@ -51,7 +62,7 @@ func cover(x, y)
         return
 
     div: createFloatingPiece()
-    div.style.backgroundColor: '#c8f0b8'
+    div.style.backgroundColor: '#1a1a1a'
     div.style.height: TILE_SIZE + 'px'
     div.style.width: TILE_SIZE + 'px'
     div.style.top: TILE_SIZE * y + 'px'
@@ -64,6 +75,7 @@ func cover(x, y)
         cover(x + 1, y)
 cover(0, 0)
 
+MIN_SPLIT_WIDTH: 12
 DIRECTIONS: {
     right: {
         delta: [1, 0],
@@ -72,11 +84,11 @@ DIRECTIONS: {
             next_direct: 'down'
             if status.height = 1
                 return []
-            if status.width = 1
+            if status.width < MIN_SPLIT_WIDTH
                 return [{
-                    width: 1,
+                    width: status.width,
                     height: status.height - 1,
-                    x: status.x,
+                    x: status.x + status.width - 1,
                     y: status.y + 1,
                     direct: next_direct,
                 }]
@@ -103,12 +115,12 @@ DIRECTIONS: {
             next_direct: 'left'
             if status.width = 1
                 return []
-            if status.height = 1
+            if status.height < MIN_SPLIT_WIDTH
                 return [{
                     width: status.width - 1,
-                    height: 1,
+                    height: status.height,
                     x: status.x - 1,
-                    y: status.y,
+                    y: status.y + status.height - 1,
                     direct: next_direct,
                 }]
             heightA: Math.floor(status.height / 2)
@@ -134,11 +146,11 @@ DIRECTIONS: {
             next_direct: 'up'
             if status.height = 1
                 return []
-            if status.width = 1
+            if status.width < MIN_SPLIT_WIDTH
                 return [{
-                    width: 1,
+                    width: status.width,
                     height: status.height - 1,
-                    x: status.x,
+                    x: status.x - status.width + 1,
                     y: status.y - 1,
                     direct: next_direct
                 }]
@@ -165,12 +177,12 @@ DIRECTIONS: {
             next_direct: 'right'
             if status.width = 1
                 return []
-            if status.height = 1
+            if status.height < MIN_SPLIT_WIDTH
                 return [{
                     width: status.width - 1,
-                    height: 1,
+                    height: status.height,
                     x: status.x + 1,
-                    y: status.y,
+                    y: status.y - status.height + 1,
                     direct: next_direct,
                 }]
             heightA: Math.floor(status.height / 2)
@@ -234,6 +246,22 @@ start({
 ############
 # HOVERING #
 ############
+
+func selectNode(node)
+    bullet.innerHTML: {
+        Blog: '''Bit Focus Blog<br>
+                 <br>
+                 <a href='http://blog.bitfoc.us/tag=Python'>Python</a> Programming<br>
+                 <a href='http://blog.bitfoc.us/?tag=Web%20Server'>Web</a> developing<br>
+                 And <a href='http://blog.bitfoc.us/?tag=Algorithm'>algorithm</a> implements
+                 ''',
+        Twitter: '''Follow <a href='https://twitter.com/neuront'>@neuront</a> on twitter<br>
+                    Tsukkomi with me \\o/
+                 ''',
+        Codes: '''What I'm coding now<br>
+                  <a href='https://github.com/neuront/bitfocus'>Source code</a> of this site<br>
+               ''',
+    }[node.innerHTML]
 
 func createFences(leftoff, upoff, width, height)
     total: width + height
@@ -365,36 +393,54 @@ func createFences(leftoff, upoff, width, height)
             @tick: (@tick + 1) % total
     }
 
+selection: {}
+
+func clearSelect()
+    if selection.lastSelected
+        selection.lastSelected.tick: selection.lastSelected.fences.tick
+        selection.lastSelected.fences.remove()
+        selection.lastSelected.style.color: null
+        selection.lastSelected.style.textDecoration: null
+        clearTimeout(selection.lastSelected.nextTick)
+        selection.lastSelected: null
+
 jQuery('.label').each(():
     @tick: 0
 ).hover(():
+    if selection.lastSelected = @
+        return
+    clearSelect()
+
     @fences: createFences(@offsetLeft - 4, @offsetTop - 2, @offsetWidth + 8,
                           @offsetHeight + 4)
     @fences.tick: @tick
     fences: @fences
     @nextTick: setInterval((): fences.nextTick(), 20)
-, ():
-    @tick: @fences.tick
-    @fences.remove()
-    clearTimeout(@nextTick)
+    selectNode(@)
+    selection.lastSelected: @
+    @style.color: 'white'
+    selection.lastSelected.style.textDecoration: 'none'
 )
 
 #######
 # EGG #
 #######
 
-jQuery('#n').click(():
+jQuery('#n').data('tick', 0).click(():
     target: document.getElementById('nx')
     me: @
     if @fences
         clearTimeout(@nextTick)
+        jQuery(@).data('tick', @fences.tick)
         @fences.remove()
         @fences: null
         target.style.visibility: 'visible'
         document.getElementById('ny').style.visibility: 'visible'
     else
+        clearSelect()
         @fences: createFences(target.offsetLeft, target.offsetTop,
                               target.offsetWidth, target.offsetHeight)
+        @fences.tick: jQuery(@).data('tick')
         @nextTick: setInterval((): me.fences.nextTick(), 20)
         target.style.visibility: 'hidden'
         document.getElementById('ny').style.visibility: 'hidden'
