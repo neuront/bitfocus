@@ -4,8 +4,6 @@
 <meta charset='utf-8'>
 <title>Bit Focus</title>
 <link rel='shortcut icon' href='http://blog.bitfoc.us/favicon.ico'>
-<script src='jq.js'></script>
-<script src='main.gen.js'></script>
 <style>
 * {
     padding: 0;
@@ -24,13 +22,12 @@ body {
 
 .aa {
     font-family: monospace;
-    white-space: pre;
     line-height: 0.96em;
 }
 
 a {
     color: #cfb;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 a:hover {
@@ -42,28 +39,76 @@ a:hover {
 #n:hover {
     cursor: pointer;
 }
+
+.label {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.nav-btn {
+    border: none;
+    background-color: transparent;
+    color: #cfb;
+}
+
+pre {
+    font-family: monospace, consolas, Droid Mono, "Courier New";
+}
 </style>
 </head>
 <body>
 <div class='parent'>
-<div class='aa' id='display'><span id='lt_anchor'>.</span>--.
-|  |
-|  |       <span id='ny'>___</span>  ___             <span id='bullet_anchor'> </span>
-|  |       <span id='nx'>\_|</span>  |  |
-|  |____  ____  |  |___
-|       \ `.  | |      |
-|  .--.  | |  | |  .---'
-|  |  |  | |  | |  |
-|  |<span id='n'>  </span>|  | |  | |  |      .::::::.
-|  |  |  | |  | |  |      ::::::::
-|  `--'  | |  | |  '---.  ::::
-\_______/ /___| \______/  ::::
-                          :::::::: .::::::. .::::::. :::  ::: .::::::.
-    <a href='http://blog.bitfoc.us/' class='label'>Blog</a>                  :::::::: :::::::: :::::::: :::  ::: ::''''':
-                          ::::     :::  ::: :::      :::  ::: ::.....
-        <a href='https://github.com/neuront' class='label'>Codes</a>             ::::     :::  ::: :::      :::  :::  '''''::
-                          ::::     :::::::: :::::::: :::::::: :.....::
-            <a href='https://twitter.com/neuront' class='label'>Twitter</a>       ::::     `::::::' `::::::' `::::::' `::::::'
-                                                                      <span id='rb_anchor'>&nbsp;</span></div>
+    <div class='aa' style='visibility: hidden'>
+        <pre><span style='display: none' id='aa_'>#</span>
+        .--.
+        |  |
+        |  |       ___  ___
+        |  |       \_|  |  |
+        |  |____  ____  |  |___  .::::::.
+        |       \ `.  | |      | ::::::::
+        |  .--.  | |  | |  .---' ::::
+        |  |  |  | |  | |  |     ::::
+        |  |  |  | |  | |  |     :::::::: .::::::. .::::::. :::  ::: .::::::.
+        |  |  |  | |  | |  |     :::::::: :::::::: :::::::: :::  ::: ::''''':
+        |  `--'  | |  | |  '---. ::::     :::  ::: :::      :::  ::: ::.....
+        \_______/ /___| \______/ ::::     :::  ::: :::      :::  :::  '''''::
+                                 ::::     :::::::: :::::::: :::::::: :.....::
+                                 ::::     `::::::' `::::::' `::::::' `::::::'
+        </pre>
+    </div>
+    <div class='aa'>
+        <div class='label'>
+            <button class='nav-btn' style='padding-bottom: 1em; padding-left: 1em; padding-right: 1em'><pre id='software-btn'></pre></button>
+        </div>
+        <div class='label'>
+            <button class='nav-btn' style='padding-bottom: 1em; padding-left: 1em; padding-right: 1em'><pre id='about-btn'></pre></button>
+        </div>
+    </div>
 </div>
 <div class='parent' id='canvas'></div>
+
+<script>
+window.btnTexts = {
+    'software': [
+        '  ___',
+        ' |   ',
+        ' |__ ',
+        '    |',
+        '____|',
+        ''].join('\n'),
+    'about': [
+        ' __                    ',
+        '|  | |                 ',
+        '|__| |__  ___       |__',
+        '|  | |  | |  | |  | |  ',
+        '|  | |__| |__| |__\\ |_/',
+        ''].join('\n'),
+    '': ''
+};
+</script>
+<script src='jq.js'></script>
+<script src='main.gen.js'></script>
+<script>
+$('#software-btn').text(btnTexts.software);
+$('#about-btn').text(btnTexts.about);
+</script>

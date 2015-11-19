@@ -1,0 +1,211 @@
+jQuery(document).ready(%)
+
+class Fence
+    ctor(canvas, times)
+        this.canvas: canvas
+        this.times: times
+
+        this.right: null
+        this.bottom: null
+        this.top: null
+        this.left: null
+        this.topCand: null
+        this.bottomCand: null
+
+        this.loop: null
+        this.leftoff: 0
+        this.upoff: 0
+        this.width: 0
+        this.height: 0
+        this.total: 0
+        this.length: 0
+
+        this.tick: 0
+
+    func _createFloatingPiece()
+        parent: jQuery('<div>').addClass('parent')
+        div: jQuery('<div>').css({
+            position: 'relative',
+            visibility: 'hidden',
+            'background-color': '#c8f0b8',
+        })
+        parent.append(div)
+        this.canvas.append(parent)
+        div.removeMe: (): parent.remove()
+        return div
+
+    func attach(leftoff, upoff, width, height)
+        if this.loop != null
+            return
+        if this.top != null
+            return this.resume()
+
+        this.leftoff: leftoff
+        this.upoff: upoff
+        this.width: width
+        this.height: height
+        this.total: width + height
+        this.length: Math.floor(width * 2 / 3)
+
+        this.top: this._createFloatingPiece().css({
+            top: upoff,
+            height: 1,
+        })
+        this.bottom: this._createFloatingPiece().css({
+            top: upoff + height,
+            height: 1,
+        })
+        this.right: this._createFloatingPiece().css({
+            left: leftoff + width,
+            width: 1,
+        })
+        this.left: this._createFloatingPiece().css({
+            left: leftoff,
+            width: 1,
+        })
+        this.topCand: this._createFloatingPiece().css({
+            left: leftoff,
+            top: upoff,
+            height: 1,
+        })
+        this.bottomCand: this._createFloatingPiece().css({
+            top: upoff + height,
+            height: 1,
+        })
+
+        this.resume()
+
+    func resume()
+        if this.loop != null
+            return
+        me: this
+        this.loop: setInterval((): me._nextTick(), 20)
+
+    func pause()
+        if this.loop = null
+            return
+        clearTimeout(this.loop)
+        this.loop: null
+
+    func remove()
+        if this.top = null
+            return
+        this.pause()
+
+        this.top.removeMe()
+        this.top: null
+
+        this.bottom.removeMe()
+        this.bottom: null
+
+        this.right.removeMe()
+        this.right: null
+
+        this.left.removeMe()
+        this.left: null
+
+        this.topCand.removeMe()
+        this.topCand: null
+
+        this.bottomCand.removeMe()
+        this.bottomCand: null
+
+        this.leftoff: 0
+        this.upoff: 0
+        this.width: 0
+        this.height: 0
+        this.total: 0
+        this.length: 0
+
+    func _nextTick()
+        if 0 <= this.tick && this.tick <= this.width - this.length
+            this.top.css('width', this.length)
+            this.top.css('left', this.leftoff + this.tick)
+            this.bottom.css('width', this.length)
+            this.bottom.css('left', this.leftoff + this.width - this.length -
+                                    this.tick)
+
+            this.top.css('visibility', 'visible')
+            this.bottom.css('visibility', 'visible')
+            this.topCand.css('visibility', 'hidden')
+            this.bottomCand.css('visibility', 'hidden')
+
+        if this.width - this.length < this.tick && this.tick < this.width
+            this.top.css('width', this.width - this.tick)
+            this.top.css('left', this.leftoff + this.tick)
+            this.bottom.css('width', this.width - this.tick)
+            this.bottom.css('left', this.leftoff)
+
+            this.top.css('visibility', 'visible')
+            this.bottom.css('visibility', 'visible')
+
+        if this.tick >= this.width
+            this.top.css('visibility', 'hidden')
+            this.bottom.css('visibility', 'hidden')
+
+        sideLen: this.length - (this.width - this.tick)
+        if this.width - this.length < this.tick && this.tick <= this.width
+            this.right.css('top', this.upoff)
+            if sideLen < this.height
+                this.right.css('height', sideLen)
+                this.left.css('height', sideLen)
+                this.left.css('top', this.upoff + this.total - this.length -
+                                     this.tick)
+            else
+                this.right.css('height', this.height)
+                this.left.css('height', this.height)
+                this.left.css('top', this.upoff)
+
+            this.right.css('visibility', 'visible')
+            this.left.css('visibility', 'visible')
+
+        if this.width < this.tick && this.tick <= this.total - this.length
+            this.left.css('top', this.upoff + this.total - this.length -
+                                 this.tick)
+            if this.length < this.height
+                this.right.css('height', this.length)
+                this.right.css('top', this.upoff + this.tick - this.width)
+                this.left.css('height', this.length)
+            else
+                this.right.css('height', this.height)
+                this.right.css('top', this.upoff)
+                this.left.css('height', this.height)
+
+            this.right.css('visibility', 'visible')
+            this.left.css('visibility', 'visible')
+
+        sideRest: this.total - this.tick
+        if this.total - this.length < this.tick && this.tick < this.total
+            this.left.css('top', this.upoff)
+            if sideRest < this.height
+                this.right.css('height', sideRest)
+                this.left.css('height', sideRest)
+                this.right.css('top', this.upoff + this.tick - this.width)
+            else
+                this.right.css('height', this.height)
+                this.left.css('height', this.height)
+                this.right.css('top', this.upoff)
+
+            this.right.css('visibility', 'visible')
+            this.left.css('visibility', 'visible')
+
+        if this.tick < this.times
+            this.right.css('visibility', 'hidden')
+            this.left.css('visibility', 'hidden')
+
+        candLen: this.tick + this.length - this.total
+        if this.total < this.tick + this.length
+            this.topCand.css('width', candLen)
+            this.bottomCand.css('width', candLen)
+            this.bottomCand.css('left', this.leftoff + this.width - candLen)
+
+            this.topCand.css('visibility', 'visible')
+            this.bottomCand.css('visibility', 'visible')
+
+        this.tick: (this.tick + this.times) % this.total
+
+jQuery('.label').each(():
+    this.fence: Fence(jQuery('#canvas'), 4)
+    this.fence.attach(this.offsetLeft - 4, this.offsetTop - 2,
+                      this.offsetWidth + 8, this.offsetHeight + 4)
+)
