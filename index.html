@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang='en'>
 <head>
 <meta charset='utf-8'>
 <title>Bit Focus</title>
@@ -20,95 +20,84 @@ body {
     width: 0;
 }
 
+a {
+    color: #bfa;
+}
+
+a:hover {
+    color: white;
+}
+
 .aa {
     font-family: monospace;
     line-height: 0.96em;
 }
 
-a {
-    color: #cfb;
+.aa a {
     text-decoration: none;
 }
 
-a:hover {
+.aa a:hover {
     cursor: pointer;
-    color: white;
     text-decoration: none;
 }
 
-#n:hover {
-    cursor: pointer;
+.card .box {
+    padding: 0.5em;
 }
 
-.label {
-    display: inline-block;
-    margin-left: 4px;
-}
-
-.nav-btn {
-    border: none;
-    background-color: transparent;
-    color: #cfb;
-}
-
-pre {
+span.code, pre {
     font-family: monospace, consolas, Droid Mono, "Courier New";
 }
+
+p.item {
+    margin-left: 2em;
+    margin-top: 0.5em;
+}
+
+p.more {
+    margin-top: 2em;
+    text-align: right;
+}
 </style>
+<script src='jquery.js'></script>
+<script src='circularslide.js'></script>
 </head>
 <body>
-<div class='parent'>
-    <div class='aa' style='visibility: hidden'>
-        <pre><span style='display: none' id='aa_'>#</span>
-        .--.
-        |  |
-        |  |       ___  ___
-        |  |       \_|  |  |
-        |  |____  ____  |  |___  .::::::.
-        |       \ `.  | |      | ::::::::
-        |  .--.  | |  | |  .---' ::::
-        |  |  |  | |  | |  |     ::::
-        |  |  |  | |  | |  |     :::::::: .::::::. .::::::. :::  ::: .::::::.
-        |  |  |  | |  | |  |     :::::::: :::::::: :::::::: :::  ::: ::''''':
-        |  `--'  | |  | |  '---. ::::     :::  ::: :::      :::  ::: ::.....
-        \_______/ /___| \______/ ::::     :::  ::: :::      :::  :::  '''''::
-                                 ::::     :::::::: :::::::: :::::::: :.....::
-                                 ::::     `::::::' `::::::' `::::::' `::::::'
-        </pre>
+<pre class='aa'>________  _________ _________<br>|       \ |_     _| |       |<br>|  --   |   |   |   |_     _|<br>|      -    |   |     |   |<br>|  --   |  _|   |_    |   |<br>|_______/ |_______|   |___|  <br><br>                    _________  _______   ________ _________  ________<br>   <a href='javascript:slideTo(1)'>Blog</a>             |       | /       \ /       | |   |   | |       |<br>                    |     --| |       | |       | |   |   | |    ---|<br>    <a href='javascript:slideTo(2)'>Github</a>          |       | |   O   | |     --  |       | |       |<br>                    |     --  |       | |       | |       | |---    |<br>     <a href='javascript:slideTo(3)'>Stackoverflow</a>  |_____|   \_______/ \_______| |_______| |_______|<br><br></pre>
+<div id='slider'>
+    <div></div>
+    <div class='card' style='background-color: #331'>
+      <div class='box'>
+        <h2>My Blog</h2>
+        <p class='item'><a href='http://blog.bitfoc.us/p/524'>How to setup a Redis cluster</a></p>
+        <p class='item'><a href='http://blog.bitfoc.us/p/516'>How to configure a Gunicorn service</a></p>
+        <p class='item'><a href='http://blog.bitfoc.us/p/514'>How to setup a Photo service using Flask and Mongodb</a></p>
+        <p class='more'>
+            <a href='http://blog.bitfoc.us/'>More posts</a>
+            <br>
+            <small style='font-size: 0.6em;'>All the posts are written in Chinese.</small>
+        </p>
+      </div>
     </div>
-    <div class='aa'>
-        <div class='label'>
-            <button class='nav-btn' style='padding-bottom: 1em; padding-left: 1em; padding-right: 1em'><pre id='software-btn'></pre></button>
-        </div>
-        <div class='label'>
-            <button class='nav-btn' style='padding-bottom: 1em; padding-left: 1em; padding-right: 1em'><pre id='about-btn'></pre></button>
-        </div>
+    <div class='card' style='background-color: #133'>
+      <div class='box'>
+        <h2>My Projects</h2>
+        <p class='item'><a href='https://github.com/neuront/flatscript'>Flatscript: A language and its compiler designed by me</a></p>
+        <p class='item'><a href='https://github.com/projecteru/redis-trib.py'>Redis-trib.py: A Redis cluster toolkit</a></p>
+        <p class='item'><a href='https://github.com/neuront/nijipress'>Nijipress: My blog program that runs on the GAE</a></p>
+        <p class='item'><a href='https://github.com/neuront/circularslide'>CircularSlide: A jQuery plugin for the slide effect in this page</a></p>
+        <p class='more'><a href='https://github.com/neuront/'>More projects</a></p>
+      </div>
+    </div>
+    <div class='card' style='background-color: #131'>
+      <div class='box'>
+        <h2>My Q&amp;A</h2>
+        <p class='item'><a href='https://stackoverflow.com/a/38478032/555515'>An answer about how the <span class='code'>std::function</span> is implemented</a></p>
+        <p class='item'><a href='https://stackoverflow.com/q/38091427/555515'>A question about C++11 user-defined literal feature</a></p>
+        <p class='item'><a href='https://stackoverflow.com/a/24012884/555515'>An answer about Javascript data structure transforming by using the <span class='code'>reduce</span> function</a></p>
+        <p class='more'><a href='https://stackoverflow.com/users/555515/neuront'>More activities</a></p>
+      </div>
     </div>
 </div>
-<div class='parent' id='canvas'></div>
-
-<script>
-window.btnTexts = {
-    'software': [
-        '  ___',
-        ' |   ',
-        ' |__ ',
-        '    |',
-        '____|',
-        ''].join('\n'),
-    'about': [
-        ' __                    ',
-        '|  | |                 ',
-        '|__| |__  ___       |__',
-        '|  | |  | |  | |  | |  ',
-        '|  | |__| |__| |__\\ |_/',
-        ''].join('\n'),
-    '': ''
-};
-</script>
-<script src='jq.js'></script>
 <script src='main.gen.js'></script>
-<script>
-$('#software-btn').text(btnTexts.software);
-$('#about-btn').text(btnTexts.about);
-</script>
